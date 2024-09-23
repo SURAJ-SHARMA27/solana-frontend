@@ -108,8 +108,10 @@ const Game = () => {
 
     const createGame = async () => {
         // Show a loading toast message
+        console.log("eafeaaf")
+        
         try {
-            const res=await axios.get("http://localhost:3000/");
+            const res=await axios.get("https://solana-showdown-backend.onrender.com/");
             console.log(res,"fasfa")
             
     
