@@ -11,7 +11,7 @@ const GameDashboard = ({refresh}) => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const response = await axios.get("http://localhost:3000/game/dashboard");
+                const response = await axios.get("https://solana-showdown-backend.onrender.com/game/dashboard");
                 setDashboardData(response.data);
             } catch (err) {
                 setError(err.response ? err.response.data.message : "Error fetching dashboard");

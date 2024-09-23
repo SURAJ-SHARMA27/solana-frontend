@@ -68,13 +68,13 @@ const Game = () => {
 
     const checkGameStatus = async () => {
         try {   
-            const response = await axios.get("http://localhost:3000/game/findstatus");
+            const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findstatus");
             console.log(response, "here");
     
             setGameStatus(response.data.isActive);
     
             if (response.data.isActive) {
-                const gameDetails = await axios.get("http://localhost:3000/game/current");
+                const gameDetails = await axios.get("https://solana-showdown-backend.onrender.com/game/current");
                 console.log(gameDetails, "gameDetails");
                 setTotalAmount(gameDetails.data.prize);
     
@@ -108,19 +108,49 @@ const Game = () => {
 
     const createGame = async () => {
         // Show a loading toast message
-        console.log("eafeaaf")
+
         
+        const loadingToastId = toast.loading('Processing game creation...');
+    
+        // Condition 1: No wallet connected
+        if (!wallet.publicKey) {
+            toast.update(loadingToastId, { render: 'No wallet connected. Please connect your wallet.', type: 'error', isLoading: false, autoClose: 3000 });
+            return;
+        }
+    
+        // Condition 2: Invalid bet amount
+        if (betAmount <= 0) {
+            toast.update(loadingToastId, { render: 'Invalid bet amount. Please enter a positive value.', type: 'error', isLoading: false, autoClose: 3000 });
+            return;
+        }
+    
+        // Condition 3: Invalid game duration
+        if (gameDuration <= 0) {
+            toast.update(loadingToastId, { render: 'Invalid game duration. Please enter a valid duration.', type: 'error', isLoading: false, autoClose: 3000 });
+            return;
+        }
+    
+        // If all conditions are satisfied, proceed with the game creation
         try {
-            const res=await axios.get("https://solana-showdown-backend.onrender.com/");
-            console.log(res,"fasfa")
-            
+            await axios.post("https://solana-showdown-backend.onrender.com/game/create", {
+                createdBy: wallet.publicKey.toString(),
+                startingAmount: betAmount,
+                duration: gameDuration,
+                publicKey: wallet.publicKey.toString(),
+            });
+    
+            setRefresh(!refresh);  // Trigger a refresh
+            toast.update(loadingToastId, { render: `Game created successfully with a transaction of ${betAmount} SOL`, type: 'success', isLoading: false, autoClose: 3000 });
+    
+            // Call a function to check game status if needed
+            checkGameStatus();
     
         } catch (err) {
             console.error(err);
-            // toast.update(loadingToastId, { render: `Transaction failed: ${err.response?.data?.message || 'Unknown error'}`, type: 'error', isLoading: false, autoClose: 5000 });
+            toast.update(loadingToastId, { render: `Transaction failed: ${err.response?.data?.message || 'Unknown error'}`, type: 'error', isLoading: false, autoClose: 5000 });
         }
-
-        
+        setBetAmount(null)
+        setGameDuration(null)
     };
     
 
@@ -128,7 +158,7 @@ const Game = () => {
         if (!wallet.publicKey || joinAmount <= 0) return;
 
         try {
-            const response = await axios.post("http://localhost:3000/game/join", {
+            const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
                 publicKey: wallet.publicKey.toString(),
                 amount: joinAmount,
             });
