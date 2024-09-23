@@ -1,0 +1,143 @@
+/* styles.css */
+@import url('https://fonts.googleapis.com/css?family=Montserrat:400,800');
+
+body{
+  padding:0;
+  margin:0;
+  font-family: 'Montserrat', sans-serif;
+
+
+}
+.root {
+  min-height: 100vh;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(2, 25, 29, 0.9), rgba(0, 0, 0, 0.9));
+  background-size: 200% 200%; /* Allow for the gradient to animate */
+  padding: 40px;
+  animation: gradient-wave-animation 10s ease infinite; /* Adjust duration and easing as needed */
+}
+
+.header {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+@keyframes gradient-wave-animation {
+  0% {
+      background-position: 0% 50%;
+  }
+  50% {
+      background-position: 100% 50%;
+  }
+  100% {
+      background-position: 0% 50%;
+  }
+}
+
+.hero-section {
+  padding: 60px 20px;
+  background: rgba(238, 235, 235, 0.1); /* Transparent white background */
+  backdrop-filter: blur(10px); /* Apply blur for glass effect */
+  border: 1px solid rgba(216, 216, 216, 0.1); /* Light border for distinction */
+  color: #333;
+  text-align: center;
+  margin-bottom: 40px;
+  border-radius: 12px;
+  animation: gradient-animation 5s ease infinite; /* Adjust duration and easing as needed */
+}
+
+.wallet-buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.card {
+  margin: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background: rgba(245, 8, 8, 0.1); /* Transparent white background */
+  backdrop-filter: blur(10px); /* Apply blur for glass effect */
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  margin-top: 20px;
+  width: 100%;
+  background-color: #4caf50;
+}
+
+.feature-card {
+  padding: 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.1); /* Transparent white background */
+  border-radius: 30px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  color: rgb(236, 236, 236);
+  transition: background 0.5s ease; /* Add transition for the background */
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.2); /* Change background on hover */
+}
+
+.footer {
+  margin-top: 50px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1); /* Transparent white background */
+  backdrop-filter: blur(10px); /* Apply blur for glass effect */
+  color: #333;
+  text-align: center;
+  border-radius: 12px;
+}
+.heading{
+  color:rgb(236, 236, 236);
+  font-family: 'Montserrat', sans-serif;
+
+}
+
+/* Styles for the container and label */
+.input-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-label {
+  color: rgb(236, 236, 236);
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+/* Styles for the input fields */
+.custom-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid rgb(236, 236, 236);
+  background-color: transparent;
+  color: rgb(236, 236, 236);
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+.custom-input:focus {
+  border-color: rgb(236, 236, 236); /* Light gray color on focus */
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6); /* Cool glow effect on focus */
+}
+
+/* Optional: Style for button */
+.custom-button {
+  background-color: #3b30c8;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 20px;
+}
+
+.custom-button:hover {
+  background-color: #5345f5;
+}
