@@ -22,6 +22,7 @@ import {
     ListItem,
     List,
 } from "@mui/material";
+import { useMediaQuery } from '@mui/material';
 import "@solana/wallet-adapter-react-ui/styles.css";
 import axios from "axios";
 import ShieldTwoToneIcon from '@mui/icons-material/ShieldTwoTone';
@@ -65,6 +66,7 @@ const Game = () => {
     const [endTime, setEndTime] = useState(null);
     const [refresh,setRefresh]=useState(false)
     const wallet = useWallet();
+    const isSmallScreen = useMediaQuery('(max-width:500px)');
 
     const checkGameStatus = async () => {
         try {   
@@ -183,104 +185,126 @@ const Game = () => {
                 {/* Left side: About the site and description */}
                 <Grid item xs={12} md={6}>
                     <Box className="hero-section" style={{marginTop:"20px"}}>
-                        <Typography variant="h2" className="heading">
+                        <div className="heading">
                            Solana Showdown!
-                        </Typography>
+                        </div>
                         <Typography variant="h6" style={{ marginTop: "15px",color:"rgb(214, 205, 205)" , marginBottom:"20px" }}>
                             Join the community and start playing for a chance to win big!
                         </Typography>
-                        <div className="wallet-buttons" style={{marginBottom:"50px"}}>
-                            <WalletMultiButton />
-                            <WalletDisconnectButton />
-                        </div>
-                        <Grid container spacing={3} justifyContent="center">
-                        <Grid item xs={12} sm={4}>
-                        
-                            <div
-                            className="feature-card">
-                                <ShieldTwoToneIcon style={{ fontSize: 60, color: '#4caf50' }} />
-                                <Typography variant="h6" style={{ marginTop: 10 }}>Secure Betting</Typography>
-                                <Typography variant="body2">
-                                    Your funds are secure on the Solana blockchain.
-                                </Typography>
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <div className="feature-card"
-                           
-                            >
-                                <AirplayTwoToneIcon style={{ fontSize: 60, color: '#2196f3' }} />
-                                <Typography variant="h6" style={{ marginTop: 10 }}>Fair Play</Typography>
-                                <Typography variant="body2">
-                                    All games are transparent and fair for everyone.
-                                </Typography>
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <div className="feature-card" >
-                                <PaidTwoToneIcon style={{ fontSize: 60, color: '#ff9800' }} />
-                                <Typography variant="h6" style={{ marginTop: 10 }}>Fast Transactions</Typography>
-                                <Typography variant="body2">
-                                    Enjoy low fees and super-fast transactions.
-                                </Typography>
-                            </div>
-                        </Grid>
-                        <Typography style={{color:"rgb(236, 236, 236)", fontSize:"30px", marginTop:"30px"}}>
-Game Rules                        </Typography>
-<Grid container spacing={2} sx={{ justifyContent: 'center' }} style={{ color: "white", marginTop: "20px" }}>
-                <Grid item xs={4}>
-                    <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CardContent style={{ textAlign: 'center' }}>
-                            <Typography variant="h6" gutterBottom>
-                                <LooksOneIcon style={{ fontSize: '48px'}} /> {/* Red Color Icon */}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                Connect your Solana wallet and get started.
-                            </Typography>
-                        </CardContent>
-                    </div>
-                </Grid>
-                <Grid item xs={4}>
-                    <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CardContent style={{ textAlign: 'center' }}>
-                            <Typography variant="h6" gutterBottom>
-                                <LooksTwoIcon style={{ fontSize: '48px' }} /> {/* Blue Color Icon */}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                Enter the amount of SOL you'd like to bet and set the game duration to start a new game.
-                            </Typography>
-                        </CardContent>
-                    </div>
-                </Grid>
-            </Grid>
+                        <div
+  className="wallet-buttons"
+  style={{
+    marginBottom: '50px',
+    display: 'flex',
+    flexDirection: isSmallScreen ? 'column' : 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  }}
+>
+  <span style={{ textAlign: "center", marginBottom: isSmallScreen ? '10px' : '0' }}>
+    <WalletMultiButton />
+  </span>
+  <span style={{ textAlign: "center", marginLeft: isSmallScreen ? '0' : '10px' }}>
+    <WalletDisconnectButton />
+  </span>
+</div>
 
-            <Grid container spacing={2} sx={{ justifyContent: 'center' }} style={{ color: "white", marginTop: "10px" }}>
-                <Grid item xs={4}>
-                    <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CardContent style={{ textAlign: 'center' }}>
-                            <Typography variant="h6" gutterBottom>
-                                <Looks3Icon style={{ fontSize: '48px'  }} /> {/* Green Color Icon */}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                If a game is active, you can join by entering the amount of SOL to participate.
-                            </Typography>
-                        </CardContent>
-                    </div>
-                </Grid>
-                <Grid item xs={4}>
-                    <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <CardContent style={{ textAlign: 'center' }}>
-                            <Typography variant="h6" gutterBottom>
-                                <Looks4RoundedIcon style={{ fontSize: '48px' }} /> {/* Orange Color Icon */}
-                            </Typography>
-                            <Typography variant="body1" paragraph>
-                                The game ends after the set duration, and the winner takes the total prize pool.
-                            </Typography>
-                        </CardContent>
-                    </div>
-                </Grid> 
-            </Grid>
-                    </Grid>
+
+<Grid container spacing={3} justifyContent="center">
+    {/* Feature Cards */}
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card">
+            <ShieldTwoToneIcon style={{ fontSize: 60, color: '#4caf50' }} />
+            <Typography variant="h6" style={{ marginTop: 10 }}>Secure Betting</Typography>
+            <Typography variant="body2">
+                Your funds are secure on the Solana blockchain.
+            </Typography>
+        </div>
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card">
+            <AirplayTwoToneIcon style={{ fontSize: 60, color: '#2196f3' }} />
+            <Typography variant="h6" style={{ marginTop: 10 }}>Fair Play</Typography>
+            <Typography variant="body2">
+                All games are transparent and fair for everyone.
+            </Typography>
+        </div>
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card">
+            <PaidTwoToneIcon style={{ fontSize: 60, color: '#ff9800' }} />
+            <Typography variant="h6" style={{ marginTop: 10 }}>Fast Transactions</Typography>
+            <Typography variant="body2">
+                Enjoy low fees and super-fast transactions.
+            </Typography>
+        </div>
+    </Grid>
+    </Grid>
+    {/* Game Rules Title */}
+    <Grid item xs={12} style={{ textAlign: 'center', marginTop: '30px' }}>
+        <Typography style={{ color: "rgb(236, 236, 236)", fontSize: "30px" }}>
+            Game Rules
+        </Typography>
+    </Grid>
+
+    {/* Game Rules Cards */}
+<Grid container spacing={2} justifyContent="center" style={{marginBottom:"20px"}}>
+
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CardContent style={{ textAlign: 'center' }}>
+                <Typography variant="h6" gutterBottom>
+                    <LooksOneIcon style={{ fontSize: '48px'}} />
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    Connect your Solana wallet and get started.
+                </Typography>
+            </CardContent>
+        </div>
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CardContent style={{ textAlign: 'center' }}>
+                <Typography variant="h6" gutterBottom>
+                    <LooksTwoIcon style={{ fontSize: '48px' }} />
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    Enter the amount of SOL you'd like to bet and set the game duration to start a new game.
+                </Typography>
+            </CardContent>
+        </div>
+    </Grid>
+    </Grid>
+<Grid container spacing={3} justifyContent="center">
+
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CardContent style={{ textAlign: 'center' }}>
+                <Typography variant="h6" gutterBottom>
+                    <Looks3Icon style={{ fontSize: '48px' }} />
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    If a game is active, you can join by entering the amount of SOL to participate.
+                </Typography>
+            </CardContent>
+        </div>
+    </Grid>
+    <Grid item xs={12} sm={4}>
+        <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <CardContent style={{ textAlign: 'center' }}>
+                <Typography variant="h6" gutterBottom>
+                    <Looks4RoundedIcon style={{ fontSize: '48px' }} />
+                </Typography>
+                <Typography variant="body1" paragraph>
+                    The game ends after the set duration, and the winner takes the total prize pool.
+                </Typography>
+            </CardContent>
+        </div>
+    </Grid> 
+</Grid>
+
+            
                     </Box>
      
                     {/* Features Section */}
@@ -304,33 +328,42 @@ Game Rules                        </Typography>
                 </Typography>
             )}
                     
-                     <div className="input-group">
-                            <label className="input-label">Bet Amount (SOL)</label>
-                            <input
-    type="number"
-    value={joinAmount === null ? '' : joinAmount}  // Show empty string if joinAmount is null
-    placeholder="Enter amount"
-    onChange={(e) => {
-        const value = e.target.value;
-
-        // Check if the input is empty and update state accordingly
-        setJoinAmount(value === '' ? null : Number(value));
-    }}
-    className="custom-input"
-/>
-
-                        </div>
+                   
+                        <div className="input-group" style={{ width: '100%', marginBottom: '15px' }}>
+        <label className="input-label">Bet Amount (SOL)</label>
+        <input
+            type="number"
+            value={joinAmount === null ? '' : joinAmount}  // Show empty string if betAmount is null
+            onChange={(e) => {
+                const value = e.target.value;
+                setJoinAmount(value === '' ? null : Number(value));
+            }}
+            placeholder="Enter amount"
+            className="custom-input"
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+        />
+    </div>
 
                       
                         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                        
+                             
                             <Button
-                                variant="contained"
-                                onClick={joinGame}
-                                style={styles.button}
-                            >
-                                Join Game
-                            </Button>
+    variant="contained"
+    onClick={joinGame}
+    style={{
+        ...styles.button,
+        transition: 'background-color 0.3s ease',
+    }}
+    onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+    }}
+    onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
+    }}
+>
+    Join Game
+</Button>
                         </div>
                         <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
                             Total Amount in Prize Pool: {totalAmount} SOL
@@ -338,50 +371,57 @@ Game Rules                        </Typography>
                     </>
                 ) : (
                     <>
-                        <div className="input-group">
-                            <label className="input-label">Bet Amount (SOL)</label>
-                            <input
-    type="number"
-    value={betAmount === null ? '' : betAmount}  // Show empty string if betAmount is null
-    onChange={(e) => {
-        const value = e.target.value;
+    <div className="input-group" style={{ width: '100%', marginBottom: '15px' }}>
+        <label className="input-label">Bet Amount (SOL)</label>
+        <input
+            type="number"
+            value={betAmount === null ? '' : betAmount}  // Show empty string if betAmount is null
+            onChange={(e) => {
+                const value = e.target.value;
+                setBetAmount(value === '' ? null : Number(value));
+            }}
+            placeholder="Enter amount"
+            className="custom-input"
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+        />
+    </div>
 
-        // Check if the input is empty and update state accordingly
-        setBetAmount(value === '' ? null : Number(value));
+    <div className="input-group" style={{ width: '100%', marginBottom: '15px' }}>
+        <label className="input-label">Game Duration (seconds)</label>
+        <input
+            type="number"
+            value={gameDuration === null ? '' : gameDuration}  // Show empty string if gameDuration is null
+            placeholder="Enter game duration"
+            onChange={(e) => {
+                const value = e.target.value;
+                setGameDuration(value === '' ? null : Number(value));
+            }}
+            className="custom-input"
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+        />
+    </div>
+
+    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+    <Button
+    variant="contained"
+    onClick={createGame}
+    style={{
+        ...styles.button,
+        transition: 'background-color 0.3s ease',
     }}
-    placeholder="Enter amount"
-    className="custom-input"
-/>
-
-                        </div>
-
-                        <div className="input-group">
-                            <label className="input-label">Game Duration (seconds)</label>
-                            <input
-    type="number"
-    value={gameDuration === null ? '' : gameDuration}  // Show empty string if gameDuration is null
-    placeholder="Enter game duration"
-    onChange={(e) => {
-        const value = e.target.value;
-
-        // Check if the input is empty and update state accordingly
-        setGameDuration(value === '' ? null : Number(value));
+    onMouseEnter={(e) => {
+        e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
     }}
-    className="custom-input"
-/>
+    onMouseLeave={(e) => {
+        e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
+    }}
+>
+    Create Game
+</Button>
 
-                        </div>
+                            </div>
+</>
 
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                            <Button
-                                variant="contained"
-                                onClick={createGame}
-                                style={styles.button}
-                            >
-                                Create Game
-                            </Button>
-                        </div>
-                    </>
                 )}
             </>
         ) : (

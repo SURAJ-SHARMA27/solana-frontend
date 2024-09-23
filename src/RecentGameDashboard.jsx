@@ -49,7 +49,16 @@ const GameDashboard = ({refresh}) => {
     return (
         <Box sx={{ padding: 2, color: 'offWhite' }}>
             <Typography variant="h4" gutterBottom style={{ textAlign: "center" }}>Recent Game</Typography>
-            <Typography variant="h6" style={{ textAlign: "center" }}>Winner: {dashboardData.winner}</Typography>
+            <Typography 
+  variant="h6" 
+  style={{ 
+    textAlign: "center", 
+    maxWidth: "100%", // Ensures it doesn't exceed the container width
+    wordBreak: "break-word" // Breaks long words to wrap to the next line
+  }}
+>
+  Winner: {dashboardData.winner}
+</Typography>
             <Typography variant="h6" style={{ textAlign: "center", marginBottom: "50px" }}>Total Prize: {dashboardData.prize} SOL</Typography>
             
             <Box sx={{ marginTop: 2, overflowX: 'auto' }}>
