@@ -130,13 +130,13 @@ const Game = () => {
       };
     const checkGameStatus = async () => {
         try {   
-            const response = await axios.get("http://localhost:3000/game/findstatus");
+            const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findstatus");
             console.log(response, "here");
     
             setGameStatus(response.data.isActive);
     
             if (response.data.isActive) {
-                const gameDetails = await axios.get("http://localhost:3000/game/current");
+                const gameDetails = await axios.get("https://solana-showdown-backend.onrender.com/game/current");
                 console.log(gameDetails, "gameDetails");
                 setTotalAmount(gameDetails.data.prize);
     
@@ -158,7 +158,7 @@ const Game = () => {
         
         // Keep fetching the winner until the response is received or the max retry count is reached
         while (!WinnerResponse && retryCount < maxRetries) {
-            const response = await axios.get("http://localhost:3000/game/findWinner");
+            const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findWinner");
             if (response && response.data && response.data.winner) {
                 WinnerResponse = response.data;
                 break;
@@ -197,7 +197,7 @@ const Game = () => {
                                 const signature = await connection1.sendTransaction(transaction, [senderKeypair]);
                                 const responseConfirm = await connection1.getSignatureStatuses([signature]);
                             console.log("Transaction successful:", responseConfirm);
-                            await axios.post("http://localhost:3000/game/postWinner")
+                            await axios.post("https://solana-showdown-backend.onrender.com/game/postWinner")
                             toast.success("Prize " + WinnerResponse.amount + " SOL sent to winner " + WinnerResponse.publicKey);
                             setAmount("");
                         } catch (error) {
@@ -281,7 +281,7 @@ const Game = () => {
           setIsProcessing(false); // Reset processing state after transaction completes
         }
         try {
-            await axios.post("http://localhost:3000/game/create", {
+            await axios.post("https://solana-showdown-backend.onrender.com/game/create", {
                 createdBy: wallet.publicKey.toString(),
                 startingAmount: betAmount,
                 duration: gameDuration,
@@ -338,7 +338,7 @@ const Game = () => {
             setIsProcessingJoin(false); // Reset processing state after transaction completes
           }
         try {
-            const response = await axios.post("http://localhost:3000/game/join", {
+            const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
                 publicKey: wallet.publicKey.toString(),
                 amount: joinAmount,
             });
