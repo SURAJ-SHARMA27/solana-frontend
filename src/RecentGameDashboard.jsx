@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
-const GameDashboard = ({refresh}) => {
+const GameDashboard = ({refresh,refreshPage}) => {
     const [dashboardData, setDashboardData] = useState(null);
     const [error, setError] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
@@ -11,7 +11,7 @@ const GameDashboard = ({refresh}) => {
     useEffect(() => {
         const fetchDashboard = async () => {
             try {
-                const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findRecent");
+                const response = await axios.get("http://localhost:3000/game/findRecent");
                 setDashboardData(response.data);
             } catch (err) {
                 setError(err.response ? err.response.data.message : "Error fetching dashboard");
@@ -19,7 +19,7 @@ const GameDashboard = ({refresh}) => {
         };
 
         fetchDashboard();
-    }, [refresh]);
+    }, [refresh,refreshPage]);
 
     if (error) {
         return <div>Error: {error}</div>;

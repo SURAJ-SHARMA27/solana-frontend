@@ -4,13 +4,14 @@ import {
     WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
+import { Connection, Keypair, LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
     WalletModalProvider,
     WalletDisconnectButton,
     WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
+import bs58 from 'bs58'
 import {
     Button,
     TextField,
@@ -56,17 +57,21 @@ const styles = {
         marginTop: "20px",
         backgroundColor: "#4caf50",
         textAlign:"center"
+
     },
 };
 
+
 const Game = () => {
     const [betAmount, setBetAmount] = useState(null);
+    const [refresh, setRefresh] = useState(false);
     const [joinAmount, setJoinAmount] = useState(null);
     const [gameStatus, setGameStatus] = useState(null);
     const [totalAmount, setTotalAmount] = useState(0);
     const [gameDuration, setGameDuration] = useState(null);
     const [endTime, setEndTime] = useState(null);
-    const [refresh,setRefresh]=useState(false)
+    const [refreshPage,setRefreshPage]=useState(false)
+    const [pageLoading,setPageLoading]=useState(false)
     const [loading,setLoading]=useState(false)
     const [balance,setBalance]=useState(0)
     const [amount,setAmount]=useState(0)
@@ -78,6 +83,16 @@ const Game = () => {
     const wallet = useWallet();
     const isSmallScreen = useMediaQuery('(max-width:500px)');
     const { connection } = useConnection();
+    const handleReload = () => {
+        setPageLoading(true); // Start loading
+        // Here you can also reset other states if necessary
+        setRefreshPage(prev => !prev); // Trigger re-render
+        
+        setTimeout(() => {
+            setPageLoading(false); // Stop loading
+        }, 2000); // Wait for 2 seconds
+    };
+    
     useEffect(() => {
         async function fetchBalance() {
           if (wallet.publicKey) {
@@ -115,13 +130,13 @@ const Game = () => {
       };
     const checkGameStatus = async () => {
         try {   
-            const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findstatus");
+            const response = await axios.get("http://localhost:3000/game/findstatus");
             console.log(response, "here");
     
             setGameStatus(response.data.isActive);
     
             if (response.data.isActive) {
-                const gameDetails = await axios.get("https://solana-showdown-backend.onrender.com/game/current");
+                const gameDetails = await axios.get("http://localhost:3000/game/current");
                 console.log(gameDetails, "gameDetails");
                 setTotalAmount(gameDetails.data.prize);
     
@@ -137,25 +152,56 @@ const Game = () => {
                         setRefresh(!refresh);
                     
                         try {
-                            const WinnerResponse = await axios.get("https://solana-showdown-backend.onrender.com/game/findWinner");
-                            if(WinnerResponse.isPaid==true){
-                                toast.success(`Winner ${WinnerResponse.winner} recieved prize`)
-                                return;
+                            let WinnerResponse = null;
+        let retryCount = 0;
+        const maxRetries = 5; // Set a max retry count if needed
+        
+        // Keep fetching the winner until the response is received or the max retry count is reached
+        while (!WinnerResponse && retryCount < maxRetries) {
+            const response = await axios.get("http://localhost:3000/game/findWinner");
+            if (response && response.data && response.data.winner) {
+                WinnerResponse = response.data;
+                break;
+            }
+            retryCount++;
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second before retrying
+        }
+
+        // Check if we received a valid winner response
+        if (!WinnerResponse || !WinnerResponse.winner) {
+            toast.error("Failed to fetch winner after multiple retries.");
+            return;
+        }
+
+        // If the winner has already been paid, show a success toast and return
+        if (WinnerResponse.isPaid) {
+            toast.success(`Winner ${WinnerResponse.winner} already received the prize.`);
+            return;
+        }
+                            const base58PrivateKey = '4Pfb7iy141KUVLY85XSNm3Hp1DuYG1sHgqUskZPhjXS4Xdb821og2wnkLkZXY4DUn94b19zjP3r2Az5kApAg67A2'; // Use process.env.PRIVATE_KEY in production
+                            const privateKey = Uint8Array.from(bs58.decode(base58PrivateKey));
+                            if (privateKey.length !== 64) {
+                                throw new Error("Invalid private key size. Expected 64 bytes.");
                             }
-                            const transaction = new Transaction();
-                            transaction.add(
-                                SystemProgram.transfer({
-                                    fromPubkey: new PublicKey("4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA"),
-                                    toPubkey: new PublicKey(WinnerResponse.winner),
-                                    lamports: WinnerResponse.amount * LAMPORTS_PER_SOL,
-                                })
-                            );
-                    
-                            await wallet.sendTransaction(transaction, connection);
-                            await axios.post("https://solana-showdown-backend.onrender.com/game/postWinner")
+                            const senderKeypair = Keypair.fromSecretKey(privateKey);
+                            const connection1 = new Connection('https://solana-devnet.g.alchemy.com/v2/4bDQaLbDjq5kH3lrWHrGVRjOwQ9yRf5L', 'confirmed');
+                                const transaction = new Transaction();
+                                transaction.add(
+                                    SystemProgram.transfer({
+                                        fromPubkey: senderKeypair.publicKey,
+                                        toPubkey: new PublicKey(WinnerResponse.winner),
+                                        lamports: WinnerResponse.amount * LAMPORTS_PER_SOL,
+                                    })
+                                );
+                                console.log("reached successful:");
+                                const signature = await connection1.sendTransaction(transaction, [senderKeypair]);
+                                const responseConfirm = await connection1.getSignatureStatuses([signature]);
+                            console.log("Transaction successful:", responseConfirm);
+                            await axios.post("http://localhost:3000/game/postWinner")
                             toast.success("Prize " + WinnerResponse.amount + " SOL sent to winner " + WinnerResponse.publicKey);
                             setAmount("");
                         } catch (error) {
+                            console.log(error,"transaction Error")
                             toast.error(`Transaction failed: ${error.message}`);
                         } finally {
                             setIsProcessing(false); // Reset processing state after transaction completes
@@ -235,7 +281,7 @@ const Game = () => {
           setIsProcessing(false); // Reset processing state after transaction completes
         }
         try {
-            await axios.post("https://solana-showdown-backend.onrender.com/game/create", {
+            await axios.post("http://localhost:3000/game/create", {
                 createdBy: wallet.publicKey.toString(),
                 startingAmount: betAmount,
                 duration: gameDuration,
@@ -292,7 +338,7 @@ const Game = () => {
             setIsProcessingJoin(false); // Reset processing state after transaction completes
           }
         try {
-            const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
+            const response = await axios.post("http://localhost:3000/game/join", {
                 publicKey: wallet.publicKey.toString(),
                 amount: joinAmount,
             });
@@ -312,7 +358,25 @@ const Game = () => {
     }, []);
 
     return (
+        
         <div className="root">
+            {pageLoading && (
+                <Box
+                    sx={{
+                        position: "fixed",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        bgcolor: "rgba(0, 0, 0, 0.5)", // Backdrop color
+                        zIndex: 9999,
+                    }}
+                >
+<CircularProgress size={60} color="error" />                </Box>
+            )}
             <Grid container spacing={4}>
                 {/* Left side: About the site and description */}
                 <Grid item xs={12} md={6}>
@@ -477,27 +541,51 @@ const Game = () => {
     </div>
 
                       
-                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                       
-                             
-                            <Button
-    variant="contained"
-    onClick={joinGame}
-    style={{
-        ...styles.button,
-        transition: 'background-color 0.3s ease',
-    }}
-    onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
-    }}
-    onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
-    }}
->
-    {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
-
-</Button>
-                        </div>
+    <div
+            style={{
+                display: 'flex',
+                flexDirection: isSmallScreen ? 'column' : 'row', // Column on small screens, row otherwise
+                alignItems: 'center', // Center align on small screens
+                justifyContent: isSmallScreen ? 'center' : 'flex-start', // Center or start alignment based on screen size
+            }}
+        >
+            <Button
+                variant="contained"
+                onClick={joinGame}
+                style={{
+                    backgroundColor: '#007BFF', // Replace with your button color
+                    color: 'white',
+                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    transition: 'background-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#007BFF'; // Reset to original color
+                }}
+            >
+                {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
+            </Button>
+            <Button
+                onClick={handleReload}
+                variant="contained"
+                style={{
+                    backgroundColor: '#007BFF', // Replace with your button color
+                    color: 'white',
+                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    transition: 'background-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#007BFF'; // Reset to original color
+                }}
+            >
+                Live Reload
+            </Button>
+        </div>
                         <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
                             Total Amount in Prize Pool: {totalAmount} SOL
                         </Typography>
@@ -533,27 +621,52 @@ const Game = () => {
             style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
         />
     </div>
-
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-    <Button
-    variant="contained"
-    onClick={createGame}
-    style={{
-        ...styles.button,
-        transition: 'background-color 0.3s ease',
-    }}
-    onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
-    }}
-    onMouseLeave={(e) => {
-        e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
-    }}
->
-    {isProcessing ? <CircularProgress size={24} color="inherit" /> : buttonText}
-
-</Button>
-
-                            </div>
+ <div
+            style={{
+                display: 'flex',
+                flexDirection: isSmallScreen ? 'column' : 'row', // Column on small screens, row otherwise
+                alignItems: 'center', // Center align on small screens
+                justifyContent: 'center', // Center or start alignment based on screen size
+            }}
+        >
+            <Button
+                variant="contained"
+                onClick={joinGame}
+                style={{
+                    ...styles.button,
+                    color: 'white',
+                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    transition: 'background-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                }}
+            >
+                {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
+            </Button>
+            <Button
+                onClick={handleReload}
+                variant="contained"
+                style={{
+                    ...styles.button,
+                    backgroundColor: '#4caf50', // Replace with your button color
+                    color: 'white',
+                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    transition: 'background-color 0.3s ease',
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                }}
+            >
+                Live Reload
+            </Button>
+        </div>
 </>
 
                 )}
@@ -569,7 +682,7 @@ const Game = () => {
 
 <div style={styles.card}>
     {gameStatus?
-    <RecentGameDashboard refresh={refresh}/>:<GameDashboard refresh={refresh}/> 
+    <RecentGameDashboard refresh={refresh} refreshPage={refreshPage}/>:<GameDashboard refresh={refresh} refreshPage={refreshPage}/> 
     }
 </div>
 
