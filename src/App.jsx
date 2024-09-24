@@ -322,6 +322,7 @@ const Game = () => {
           }
         if(joinAmount<amt.prize){
             toast.error(`Enter more than ${2*amt.prize} Sol to participate.`);
+            return;
 
         }
       
