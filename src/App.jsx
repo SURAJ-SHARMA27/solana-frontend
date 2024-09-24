@@ -278,12 +278,6 @@ const Game = () => {
           setIsProcessing(true); // Set processing state to true when transaction starts
           await wallet.sendTransaction(transaction, connection);
         //   toast.success("Sent " + amount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
-          setAmount("");
-        } catch (error) {
-          toast.error(`Transaction failed: ${error.message}`);
-        } finally {
-          setIsProcessing(false); // Reset processing state after transaction completes
-        }
         try {
             await axios.post("https://solana-showdown-backend.onrender.com/game/create", {
                 createdBy: wallet.publicKey.toString(),
@@ -304,6 +298,13 @@ const Game = () => {
         }
         setBetAmount(null)
         setGameDuration(null)
+          setAmount("");
+        } catch (error) {
+          toast.error(`Transaction failed: ${error.message}`);
+        } finally {
+          setIsProcessing(false); // Reset processing state after transaction completes
+        }
+       
     };
     
 
@@ -337,26 +338,27 @@ const Game = () => {
             setIsProcessingJoin(true); // Set processing state to true when transaction starts
             await wallet.sendTransaction(transaction, connection);
             // toast.success("Sent " + joinAmount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
+            try {
+                const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
+                    publicKey: wallet.publicKey.toString(),
+                    amount: joinAmount,
+                });
+                toast.success(response.data.message);
+                setRefresh(!refresh)
+                setJoinAmount(0);
+                checkGameStatus();
+            } catch (err) {
+                console.error(err);
+                toast.error(`Failed to join the game: ${err.response.data.message}`);
+            }
+            setJoinAmount(null)
             setJoinAmount("");
           } catch (error) {
             toast.error(`Transaction failed: ${error.message}`);
           } finally {
             setIsProcessingJoin(false); // Reset processing state after transaction completes
           }
-        try {
-            const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
-                publicKey: wallet.publicKey.toString(),
-                amount: joinAmount,
-            });
-            toast.success(response.data.message);
-            setRefresh(!refresh)
-            setJoinAmount(0);
-            checkGameStatus();
-        } catch (err) {
-            console.error(err);
-            toast.error(`Failed to join the game: ${err.response.data.message}`);
-        }
-        setJoinAmount(null)
+      
 
 
     };
