@@ -2,9 +2,9 @@ import React, { useState, useMemo, useEffect } from "react";
 import {
     ConnectionProvider,
     WalletProvider,
-    useWallet,
 } from "@solana/wallet-adapter-react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
+import { LAMPORTS_PER_SOL, PublicKey, SystemProgram, Transaction } from "@solana/web3.js";
 import {
     WalletModalProvider,
     WalletDisconnectButton,
@@ -21,7 +21,9 @@ import {
     CardContent,
     ListItem,
     List,
+    CircularProgress,
 } from "@mui/material";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useMediaQuery } from '@mui/material';
 import "@solana/wallet-adapter-react-ui/styles.css";
 import axios from "axios";
@@ -65,9 +67,52 @@ const Game = () => {
     const [gameDuration, setGameDuration] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const [refresh,setRefresh]=useState(false)
+    const [loading,setLoading]=useState(false)
+    const [balance,setBalance]=useState(0)
+    const [amount,setAmount]=useState(0)
+    const [buttonText,setButtonText]=useState("Create Game")
+    const [buttonTextJoin,setButtonTextJoin]=useState("Join Game")
+    const [isDisabled,setIsDisabled]=useState(false)
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isProcessingJoin, setIsProcessingJoin] = useState(false);
     const wallet = useWallet();
     const isSmallScreen = useMediaQuery('(max-width:500px)');
-
+    const { connection } = useConnection();
+    useEffect(() => {
+        async function fetchBalance() {
+          if (wallet.publicKey) {
+            setLoading(false);
+          }
+        }
+        fetchBalance();
+      }, [connection, wallet.publicKey]);
+      
+      useEffect(() => {
+        const fetchBalance = async () => {
+          if (wallet.publicKey) {
+            const balanceLamports = await connection.getBalance(wallet.publicKey);
+            setBalance(balanceLamports / LAMPORTS_PER_SOL);
+            console.log(balanceLamports / LAMPORTS_PER_SOL, "das");
+          }
+        };
+    
+        fetchBalance();
+      }, [connection, wallet.publicKey]);
+      const handleAmountChange = (e) => {
+        const value = e.target.value;
+    
+        if (/^\d*$/.test(value)) {
+          setAmount(value);
+    
+          if (parseFloat(value) > balance) {
+            setButtonText("Insufficient Balance");
+            setIsDisabled(true);
+          } else {
+            setButtonText("Send");
+            setIsDisabled(false);
+          }
+        }
+      };
     const checkGameStatus = async () => {
         try {   
             const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findstatus");
@@ -133,6 +178,36 @@ const Game = () => {
         }
     
         // If all conditions are satisfied, proceed with the game creation
+
+        if (!betAmount || isNaN(betAmount) || betAmount <= 0) {
+          toast.error("Please enter a valid recipient address and amount.");
+          return;
+        }
+    
+        if (parseFloat(betAmount) > balance) {
+          toast.error("Insufficient balance.");
+          return;
+        }
+    
+        const transaction = new Transaction();
+        transaction.add(
+          SystemProgram.transfer({
+            fromPubkey: wallet.publicKey,
+            toPubkey: new PublicKey("4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA"),
+            lamports: betAmount * LAMPORTS_PER_SOL,
+          })
+        );
+    
+        try {
+          setIsProcessing(true); // Set processing state to true when transaction starts
+          await wallet.sendTransaction(transaction, connection);
+          toast.success("Sent " + amount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
+          setAmount("");
+        } catch (error) {
+          toast.error(`Transaction failed: ${error.message}`);
+        } finally {
+          setIsProcessing(false); // Reset processing state after transaction completes
+        }
         try {
             await axios.post("https://solana-showdown-backend.onrender.com/game/create", {
                 createdBy: wallet.publicKey.toString(),
@@ -157,8 +232,39 @@ const Game = () => {
     
 
     const joinGame = async () => {
-        if (!wallet.publicKey || joinAmount <= 0) return;
-
+        if (!wallet.publicKey || joinAmount <= 0){
+            toast.error("enter valid amount")
+            return;
+        };
+        if (!joinAmount || isNaN(joinAmount) || joinAmount <= 0) {
+            toast.error("Please enter a valid amount.");
+            return;
+          }
+      
+          if (parseFloat(joinAmount) > balance) {
+            toast.error("Insufficient balance.");
+            return;
+          }
+      
+          const transaction = new Transaction();
+          transaction.add(
+            SystemProgram.transfer({
+              fromPubkey: wallet.publicKey,
+              toPubkey: new PublicKey("4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA"),
+              lamports: joinAmount * LAMPORTS_PER_SOL,
+            })
+          );
+      
+          try {
+            setIsProcessingJoin(true); // Set processing state to true when transaction starts
+            await wallet.sendTransaction(transaction, connection);
+            toast.success("Sent " + joinAmount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
+            setJoinAmount("");
+          } catch (error) {
+            toast.error(`Transaction failed: ${error.message}`);
+          } finally {
+            setIsProcessingJoin(false); // Reset processing state after transaction completes
+          }
         try {
             const response = await axios.post("https://solana-showdown-backend.onrender.com/game/join", {
                 publicKey: wallet.publicKey.toString(),
@@ -362,7 +468,8 @@ const Game = () => {
         e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
     }}
 >
-    Join Game
+    {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
+
 </Button>
                         </div>
                         <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
@@ -416,7 +523,8 @@ const Game = () => {
         e.currentTarget.style.backgroundColor = styles.button.backgroundColor; // Reset to original color
     }}
 >
-    Create Game
+    {isProcessing ? <CircularProgress size={24} color="inherit" /> : buttonText}
+
 </Button>
 
                             </div>
@@ -449,10 +557,10 @@ const Game = () => {
 
 const App = () => {
     const network = WalletAdapterNetwork.Devnet;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    // const endpoint = useMemo(() => clusterApiUrl(network), [network]);
 
     return (
-        <ConnectionProvider endpoint={endpoint}>
+        <ConnectionProvider endpoint={"https://solana-devnet.g.alchemy.com/v2/4bDQaLbDjq5kH3lrWHrGVRjOwQ9yRf5L"}>
             <WalletProvider wallets={[]} autoConnect>
                 <WalletModalProvider>
                 <ToastContainerCondition/>

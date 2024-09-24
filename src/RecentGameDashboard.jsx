@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, CircularProgress } from '@mui/material';
 
 const GameDashboard = ({refresh}) => {
     const [dashboardData, setDashboardData] = useState(null);
@@ -26,7 +26,10 @@ const GameDashboard = ({refresh}) => {
     }
 
     if (!dashboardData) {
-        return <div>Loading...</div>;
+        return (<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+            <CircularProgress size={24} color="inherit" />
+          </div>
+          );
     }
 
     const rows = dashboardData.payers.map((payer, index) => ({
