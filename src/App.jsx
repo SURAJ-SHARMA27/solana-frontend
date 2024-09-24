@@ -628,7 +628,7 @@ const Game = () => {
         >
             <Button
                 variant="contained"
-                onClick={joinGame}
+                onClick={createGame}
                 style={{
                     ...styles.button,
                     color: 'white',
@@ -642,7 +642,7 @@ const Game = () => {
                     e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
                 }}
             >
-                {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
+                {isProcessing ? <CircularProgress size={24} color="inherit" /> : buttonText}
             </Button>
             <Button
                 onClick={handleReload}
