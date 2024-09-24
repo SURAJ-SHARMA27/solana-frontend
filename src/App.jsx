@@ -331,7 +331,7 @@ const Game = () => {
           try {
             setIsProcessingJoin(true); // Set processing state to true when transaction starts
             await wallet.sendTransaction(transaction, connection);
-            toast.success("Sent " + joinAmount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
+            // toast.success("Sent " + joinAmount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
             setJoinAmount("");
           } catch (error) {
             toast.error(`Transaction failed: ${error.message}`);
