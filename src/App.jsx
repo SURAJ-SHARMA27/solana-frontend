@@ -277,7 +277,7 @@ const Game = () => {
         try {
           setIsProcessing(true); // Set processing state to true when transaction starts
           await wallet.sendTransaction(transaction, connection);
-          toast.success("Sent " + amount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
+        //   toast.success("Sent " + amount + " SOL to " + "4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA");
           setAmount("");
         } catch (error) {
           toast.error(`Transaction failed: ${error.message}`);
