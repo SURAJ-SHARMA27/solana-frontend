@@ -12,6 +12,7 @@ import {
 } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import bs58 from 'bs58'
+import { GitHub, LinkedIn } from '@mui/icons-material';
 import {
     Button,
     TextField,
@@ -23,6 +24,7 @@ import {
     ListItem,
     List,
     CircularProgress,
+    IconButton,
 } from "@mui/material";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import { useMediaQuery } from '@mui/material';
@@ -83,11 +85,13 @@ const Game = () => {
     const wallet = useWallet();
     const isSmallScreen = useMediaQuery('(max-width:500px)');
     const { connection } = useConnection();
-    const handleReload = () => {
+    const handleReload = async () => {
+        const response = await axios.get("https://solana-showdown-backend.onrender.com/game/findstatus");    
+        setGameStatus(response.data.isActive);
         setPageLoading(true); // Start loading
         // Here you can also reset other states if necessary
         setRefreshPage(prev => !prev); // Trigger re-render
-        
+        setRefresh(!refresh)
         setTimeout(() => {
             setPageLoading(false); // Stop loading
         }, 2000); // Wait for 2 seconds
@@ -379,7 +383,7 @@ const Game = () => {
                 <Grid item xs={12} md={6}>
                     <Box className="hero-section" style={{marginTop:"20px"}}>
                         <div className="heading">
-                           Solana Showdown!
+                           Solana Showdown
                         </div>
                         <Typography variant="h6" style={{ marginTop: "15px",color:"rgb(214, 205, 205)" , marginBottom:"20px" }}>
                             Join the community and start playing for a chance to win big!
@@ -550,7 +554,8 @@ const Game = () => {
                 variant="contained"
                 onClick={joinGame}
                 style={{
-                    backgroundColor: '#007BFF', // Replace with your button color
+                    ...styles.button,
+                    backgroundColor: '#4caf50', // Replace with your button color
                     color: 'white',
                     margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
                     transition: 'background-color 0.3s ease',
@@ -559,7 +564,7 @@ const Game = () => {
                     e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#007BFF'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
                 }}
             >
                 {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
@@ -568,7 +573,8 @@ const Game = () => {
                 onClick={handleReload}
                 variant="contained"
                 style={{
-                    backgroundColor: '#007BFF', // Replace with your button color
+                    ...styles.button,
+                    backgroundColor: '#4caf50', // Replace with your button color
                     color: 'white',
                     margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
                     transition: 'background-color 0.3s ease',
@@ -577,7 +583,7 @@ const Game = () => {
                     e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#007BFF'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
                 }}
             >
                 Live Reload
@@ -686,7 +692,25 @@ const Game = () => {
                 </Grid>
             </Grid>
 
-           
+           <div style={{ textAlign: "center", color: "white" }}>
+      <Typography>Developed and designed by Suraj</Typography>
+      <IconButton
+        component="a"
+        href="https://github.com/SURAJ-SHARMA27"
+        target="_blank"
+        style={{ color: "white" }}
+      >
+        <GitHub />
+      </IconButton>
+      <IconButton
+        component="a"
+        href="https://www.linkedin.com/in/suraj-sharma-239894223/"
+        target="_blank"
+        style={{ color: "white" }}
+      >
+        <LinkedIn />
+      </IconButton>
+    </div>
         </div>
     );
 };
