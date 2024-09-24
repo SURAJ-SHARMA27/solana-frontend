@@ -547,7 +547,7 @@ const Game = () => {
                 display: 'flex',
                 flexDirection: isSmallScreen ? 'column' : 'row', // Column on small screens, row otherwise
                 alignItems: 'center', // Center align on small screens
-                justifyContent: isSmallScreen ? 'center' : 'flex-start', // Center or start alignment based on screen size
+                justifyContent: 'center' , // Center or start alignment based on screen size
             }}
         >
             <Button
@@ -589,9 +589,9 @@ const Game = () => {
                 Live Reload
             </Button>
         </div>
-                        <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
+                        {/* <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
                             Total Amount in Prize Pool: {totalAmount} SOL
-                        </Typography>
+                        </Typography> */}
                     </>
                 ) : (
                     <>

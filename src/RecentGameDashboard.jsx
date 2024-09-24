@@ -62,7 +62,7 @@ const GameDashboard = ({refresh,refreshPage}) => {
 >
   Winner: {dashboardData.winner}
 </Typography>
-            <Typography variant="h6" style={{ textAlign: "center", marginBottom: "50px" }}>Total Prize: {dashboardData.prize} SOL</Typography>
+            <Typography variant="h6" style={{ textAlign: "center", marginBottom: "50px" }}>Total prize pool: {dashboardData.prize} SOL</Typography>
             
             <Box sx={{ marginTop: 2, overflowX: 'auto' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
