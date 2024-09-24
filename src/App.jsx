@@ -308,6 +308,7 @@ const Game = () => {
     
 
     const joinGame = async () => {
+        const amt = await axios.get("https://solana-showdown-backend.onrender.com/game/findRecent");
        
         if (!joinAmount || isNaN(joinAmount) || joinAmount <= 0) {
             toast.error("Please enter a valid amount.");
@@ -318,6 +319,10 @@ const Game = () => {
             toast.error("Insufficient balance.");
             return;
           }
+        if(joinAmount<amt.prize){
+            toast.error(`Enter more than ${2*amt.prize} Sol to participate.`);
+
+        }
       
           const transaction = new Transaction();
           transaction.add(
@@ -352,6 +357,8 @@ const Game = () => {
             toast.error(`Failed to join the game: ${err.response.data.message}`);
         }
         setJoinAmount(null)
+
+
     };
 
     useEffect(() => {
