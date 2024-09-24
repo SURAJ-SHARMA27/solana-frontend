@@ -304,10 +304,7 @@ const Game = () => {
     
 
     const joinGame = async () => {
-        if (!wallet.publicKey || joinAmount <= 0){
-            toast.error("enter valid amount")
-            return;
-        };
+       
         if (!joinAmount || isNaN(joinAmount) || joinAmount <= 0) {
             toast.error("Please enter a valid amount.");
             return;
