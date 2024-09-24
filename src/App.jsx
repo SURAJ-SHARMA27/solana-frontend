@@ -132,10 +132,36 @@ const Game = () => {
                 const timeoutDuration = endTime - now; // Calculate the timeout duration
     
                 if (timeoutDuration > 0) {
-                    setTimeout(() => {
+                    setTimeout(async () => {  // Add 'async' here
                         setGameStatus(false);
-                        setRefresh(!refresh)
+                        setRefresh(!refresh);
+                    
+                        try {
+                            const WinnerResponse = await axios.get("https://solana-showdown-backend.onrender.com/game/findWinner");
+                            if(WinnerResponse.isPaid==true){
+                                toast.success(`Winner ${WinnerResponse.winner} recieved prize`)
+                                return;
+                            }
+                            const transaction = new Transaction();
+                            transaction.add(
+                                SystemProgram.transfer({
+                                    fromPubkey: new PublicKey("4XvAr1Uian9HT3bvjrPzHyJLyPwDwgLbvg4ETUJii5AA"),
+                                    toPubkey: new PublicKey(WinnerResponse.winner),
+                                    lamports: WinnerResponse.amount * LAMPORTS_PER_SOL,
+                                })
+                            );
+                    
+                            await wallet.sendTransaction(transaction, connection);
+                            await axios.post("https://solana-showdown-backend.onrender.com/game/postWinner")
+                            toast.success("Prize " + WinnerResponse.amount + " SOL sent to winner " + WinnerResponse.publicKey);
+                            setAmount("");
+                        } catch (error) {
+                            toast.error(`Transaction failed: ${error.message}`);
+                        } finally {
+                            setIsProcessing(false); // Reset processing state after transaction completes
+                        }
                     }, timeoutDuration);
+                    
                 } else {
                     // If the end time has already passed, set gameStatus to false immediately
                     setGameStatus(false);
