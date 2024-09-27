@@ -389,8 +389,7 @@ const Game = () => {
 <CircularProgress size={60} color="error" />                </Box>
             )}
             <Grid container spacing={4}>
-                {/* Left side: About the site and description */}
-                <Grid item xs={12} md={6}>
+                 <Grid item xs={12} md={6}>
                     <Box className="hero-section" style={{marginTop:"20px"}}>
                         <div className="heading">
                            Solana Showdown
@@ -419,8 +418,7 @@ const Game = () => {
 
 
 <Grid container spacing={3} justifyContent="center">
-    {/* Feature Cards */}
-    <Grid item xs={12} sm={4}>
+     <Grid item xs={12} sm={4}>
         <div className="feature-card">
             <ShieldTwoToneIcon style={{ fontSize: 60, color: '#4caf50' }} />
             <Typography variant="h6" style={{ marginTop: 10 }}>Secure Betting</Typography>
@@ -448,15 +446,13 @@ const Game = () => {
         </div>
     </Grid>
     </Grid>
-    {/* Game Rules Title */}
-    <Grid item xs={12} style={{ textAlign: 'center', marginTop: '30px' }}>
+     <Grid item xs={12} style={{ textAlign: 'center', marginTop: '30px' }}>
         <Typography style={{ color: "rgb(236, 236, 236)", fontSize: "30px" }}>
             Game Rules
         </Typography>
     </Grid>
 
-    {/* Game Rules Cards */}
-<Grid container spacing={2} justifyContent="center" style={{marginBottom:"20px"}}>
+ <Grid container spacing={2} justifyContent="center" style={{marginBottom:"20px"}}>
 
     <Grid item xs={12} sm={4}>
         <div className="feature-card" style={{ height: "180px", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -514,12 +510,10 @@ const Game = () => {
             
                     </Box>
      
-                    {/* Features Section */}
-              
+               
                 </Grid>
 
-                {/* Right side: Game rules, join game, start game */}
-                <Grid item xs={12} md={6}>
+                 <Grid item xs={12} md={6}>
          
 
 
@@ -540,14 +534,14 @@ const Game = () => {
         <label className="input-label">Bet Amount (SOL)</label>
         <input
             type="number"
-            value={joinAmount === null ? '' : joinAmount}  // Show empty string if betAmount is null
+            value={joinAmount === null ? '' : joinAmount}  
             onChange={(e) => {
                 const value = e.target.value;
                 setJoinAmount(value === '' ? null : Number(value));
             }}
             placeholder="Enter amount"
             className="custom-input"
-            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }}  
         />
     </div>
 
@@ -555,9 +549,9 @@ const Game = () => {
     <div
             style={{
                 display: 'flex',
-                flexDirection: isSmallScreen ? 'column' : 'row', // Column on small screens, row otherwise
-                alignItems: 'center', // Center align on small screens
-                justifyContent: 'center' , // Center or start alignment based on screen size
+                flexDirection: isSmallScreen ? 'column' : 'row',  
+                alignItems: 'center',  
+                justifyContent: 'center' ,  
             }}
         >
             <Button
@@ -565,16 +559,16 @@ const Game = () => {
                 onClick={joinGame}
                 style={{
                     ...styles.button,
-                    backgroundColor: '#4caf50', // Replace with your button color
+                    backgroundColor: '#4caf50',  
                     color: 'white',
-                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    margin: isSmallScreen ? '8px 0' : '0 8px',  
                     transition: 'background-color 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)';  
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50';  
                 }}
             >
                 {isProcessingJoin ? <CircularProgress size={24} color="inherit" /> : buttonTextJoin}
@@ -584,24 +578,22 @@ const Game = () => {
                 variant="contained"
                 style={{
                     ...styles.button,
-                    backgroundColor: '#4caf50', // Replace with your button color
+                    backgroundColor: '#4caf50',  
                     color: 'white',
-                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    margin: isSmallScreen ? '8px 0' : '0 8px',  
                     transition: 'background-color 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)';  
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50';  
                 }}
             >
                 Live Reload
             </Button>
         </div>
-                        {/* <Typography variant="h6" style={{ marginTop: 20, textAlign: 'center' }}>
-                            Total Amount in Prize Pool: {totalAmount} SOL
-                        </Typography> */}
+                 
                     </>
                 ) : (
                     <>
@@ -609,14 +601,14 @@ const Game = () => {
         <label className="input-label">Bet Amount (SOL)</label>
         <input
             type="number"
-            value={betAmount === null ? '' : betAmount}  // Show empty string if betAmount is null
+            value={betAmount === null ? '' : betAmount}  
             onChange={(e) => {
                 const value = e.target.value;
                 setBetAmount(value === '' ? null : Number(value));
             }}
             placeholder="Enter amount"
             className="custom-input"
-            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
         />
     </div>
 
@@ -624,22 +616,22 @@ const Game = () => {
         <label className="input-label">Game Duration (seconds)</label>
         <input
             type="number"
-            value={gameDuration === null ? '' : gameDuration}  // Show empty string if gameDuration is null
+            value={gameDuration === null ? '' : gameDuration}  
             placeholder="Enter game duration"
             onChange={(e) => {
                 const value = e.target.value;
                 setGameDuration(value === '' ? null : Number(value));
             }}
             className="custom-input"
-            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} // Full width input
+            style={{ width: '100%', padding: '10px', boxSizing: 'border-box' }} 
         />
     </div>
  <div
             style={{
                 display: 'flex',
-                flexDirection: isSmallScreen ? 'column' : 'row', // Column on small screens, row otherwise
-                alignItems: 'center', // Center align on small screens
-                justifyContent: 'center', // Center or start alignment based on screen size
+                flexDirection: isSmallScreen ? 'column' : 'row', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
             }}
         >
             <Button
@@ -648,14 +640,14 @@ const Game = () => {
                 style={{
                     ...styles.button,
                     color: 'white',
-                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    margin: isSmallScreen ? '8px 0' : '0 8px', 
                     transition: 'background-color 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; 
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50'; 
                 }}
             >
                 {isProcessing ? <CircularProgress size={24} color="inherit" /> : buttonText}
@@ -665,16 +657,16 @@ const Game = () => {
                 variant="contained"
                 style={{
                     ...styles.button,
-                    backgroundColor: '#4caf50', // Replace with your button color
+                    backgroundColor: '#4caf50', 
                     color: 'white',
-                    margin: isSmallScreen ? '8px 0' : '0 8px', // Adjust margin for small screens
+                    margin: isSmallScreen ? '8px 0' : '0 8px', 
                     transition: 'background-color 0.3s ease',
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; // Dim color on hover
+                    e.currentTarget.style.backgroundColor = 'rgba(7, 117, 49, 0.726)'; 
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#4caf50'; // Reset to original color
+                    e.currentTarget.style.backgroundColor = '#4caf50'; 
                 }}
             >
                 Live Reload
